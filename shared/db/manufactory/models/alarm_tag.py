@@ -8,6 +8,6 @@ class AlarmTag(Base):
     __tablename__ = "alarm_tag"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    tag = Column(String(100), nullable=False)
+    tag = Column(String(100), nullable=False, unique=True)
 
-    alarm_message = relationship("AlarmMessage", back_populates="tag", cascade="all, delete-orphan")
+    alarm_messages = relationship("AlarmMessage", back_populates="tag", cascade="all, delete-orphan")
