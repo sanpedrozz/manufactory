@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 config.set_main_option("sqlalchemy.url", f"{settings.manufactory_db_url}?async_fallback=True")
 
 # Импортируем модели для автоматической генерации миграций
-from src.db.base import Base
+from shared.db.base import Base
 
 target_metadata = Base.metadata
 

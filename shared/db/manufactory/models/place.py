@@ -5,11 +5,11 @@ from shared.db.base import Base
 
 
 class Place(Base):
-    __tablename__ = "places"
+    __tablename__ = "place"
     id = Column(BigInteger, primary_key=True)
     name = Column(Text)
     message_thread_id = Column(String, default="General", nullable=False)
     ip = Column(String(45), nullable=True)
 
     operations = relationship("OperationHistory", back_populates="place", post_update=True)
-    alarm_histories = relationship("AlarmHistory", back_populates="place", post_update=True)
+    alarm_history = relationship("AlarmHistory", back_populates="place", cascade="all, delete-orphan")

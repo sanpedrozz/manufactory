@@ -1,13 +1,17 @@
-from alarm_history import AlarmHistory
-from alarm_messages import AlarmMessages
-from operations_history import OperationHistory
-from places import Place
-from plc_data import PLCData
+from .alarm_history import AlarmHistory
+from .alarm_message import AlarmMessage
+from .alarm_tag import AlarmTag
+from .operations_history import OperationHistory
+from .place import Place
+from .sensor import Sensor
+from .sensor_history import SensorHistory
 
 __all__ = [
     "AlarmHistory",
-    "AlarmMessages",
+    "AlarmMessage",
+    "AlarmTag",
     "OperationHistory",
     "Place",
-    "PLCData"
+    "Sensor",
+    "SensorHistory"
 ]
