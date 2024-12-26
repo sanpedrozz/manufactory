@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.plc_data_hub.src.plc import PLCClient, models
 from shared.config import settings
 from shared.db.manufactory.models.models import PLCData
-from shared.utils.logger import logger
+from shared.logger.logger import logger
 
 
 class Reader:

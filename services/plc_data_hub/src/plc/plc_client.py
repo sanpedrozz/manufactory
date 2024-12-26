@@ -4,7 +4,7 @@ from time import sleep
 
 from snap7 import client
 
-from shared.utils.logger import logger
+from shared.logger.logger import logger
 
 logging.getLogger("snap7").setLevel(logging.CRITICAL)
 
