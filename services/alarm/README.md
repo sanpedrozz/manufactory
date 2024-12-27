@@ -1,0 +1,1 @@
+poetry add python-snap7 fastapi pydantic uvicorn colorlog
