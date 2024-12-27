@@ -7,7 +7,7 @@ services:
     depends_on:
       - alarms_service
       - item_checker_service
-      - plc_data_service
+#      - plc_data_service
     networks:
       - app-network
 
@@ -23,15 +23,15 @@ services:
     networks:
       - app-network
 
-  plc_data_service:
-    restart: always
-    build:
-      context: .
-      dockerfile: services/plc_data_hub/Dockerfile
-    volumes:
-      - ./shared:/app/shared
-    networks:
-      - app-network
+#  plc_data_service:
+#    restart: always
+#    build:
+#      context: .
+#      dockerfile: services/plc_data_hub/Dockerfile
+#    volumes:
+#      - ./shared:/app/shared
+#    networks:
+#      - app-network
 
   item_checker_service:
     restart: always
