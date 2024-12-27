@@ -22,10 +22,10 @@ async def send_alarm_to_telegram(alarm: Alarm, dt):
         place, alarm_text, alarm_tag = result.first()
 
     message = (
-        f"📍 ***Место аварии***: {place.name}\n"
-        f"🚨 ***Авария***: {alarm_text.message}\n"
-        f"⏰ ***Время***: {dt.strftime('%Y-%m-%d %H:%M:%S')}\n"
-        f"📝 ***Комментарий***: {alarm.comment}\n"
+        f"📍 <b>Место аварии</b>: {place.name}\n"
+        f"🚨 <b>Авария</b>: {alarm_text.message}\n"
+        f"⏰ <b>Время</b>: {dt.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"📝 <b>Комментарий</b>: {alarm.comment}\n"
         f"{alarm_tag.tag}"
     )
 
