@@ -5,8 +5,9 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - plc_data_service
+      - alarms_service
       - item_checker_service
+      - plc_data_service
     networks:
       - app-network
 
