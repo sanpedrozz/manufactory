@@ -10,6 +10,18 @@ services:
     networks:
       - app-network
 
+  alarms_service:
+    restart: always
+    build:
+      context: .
+      dockerfile: services/alarm/Dockerfile
+      args:
+        BASE_PATH: services/alarm
+    environment:
+      - UVICORN_PORT=8000
+    networks:
+      - app-network
+
   plc_data_service:
     restart: always
     build:

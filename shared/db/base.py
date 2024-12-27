@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from typing import Any, List
 
 from fastapi import HTTPException, status
+from sqlalchemy import update, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -18,10 +19,29 @@ class Base(DeclarativeBase):
         return self.__name__.lower()
 
     @classmethod
-    async def get_all(cls, db: AsyncSession) -> List[Any]:
-        """Получить все записи из таблицы."""
+    async def get_one(cls, db: AsyncSession, *conditions) -> Any:
+        """
+        Получить одну запись с использованием сложных фильтров.
+        """
+        try:
+            stmt = select(cls).filter(and_(*conditions)).limit(1)
+            result = await db.execute(stmt)
+            return result.scalars().first()
+        except SQLAlchemyError as ex:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(ex)
+            ) from ex
+
+    @classmethod
+    async def get_all(cls, db: AsyncSession, *conditions) -> List[Any]:
+        """
+        Получить записи с использованием сложных фильтров.
+        """
         try:
             stmt = select(cls)
+            if conditions:
+                stmt = stmt.filter(and_(*conditions))
             result = await db.execute(stmt)
             return list(result.scalars().all())
         except SQLAlchemyError as ex:
@@ -31,21 +51,17 @@ class Base(DeclarativeBase):
             ) from ex
 
     @classmethod
-    async def get_by_id(cls, db: AsyncSession, record_id: int) -> Any:
-        """Получить запись по ID."""
+    async def update_where(cls, db: AsyncSession, values: dict | Any, *conditions):
+        """
+        Обновить записи с использованием сложных фильтров.
+        await TasksBase.update_where(db, {"status": 1}, TasksBase.stage == 3, TasksBase.status == 0)
+        """
         try:
-            stmt = select(cls).filter(cls.id == record_id)
-            result = await db.execute(stmt)
-            instance = result.scalars().first()
-
-            if not instance:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"{cls.__name__} with id {record_id} not found"
-                )
-
-            return instance
+            stmt = update(cls).where(and_(*conditions)).values(**values)
+            await db.execute(stmt)
+            await db.commit()
         except SQLAlchemyError as ex:
+            await db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(ex)
@@ -66,8 +82,8 @@ class Base(DeclarativeBase):
 
     async def add(self, db_session: AsyncSession):
         """Добавить запись в базу данных."""
-        async with self.transaction(db_session):
-            db_session.add(self)
+        # async with self.transaction(db_session):
+        db_session.add(self)
 
     async def delete(self, db_session: AsyncSession):
         """Удалить запись из базы данных."""

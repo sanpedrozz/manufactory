@@ -1,1 +1,1 @@
-poetry add python-snap7 fastapi pydantic uvicorn colorlog
+poetry add fastapi uvicorn colorlog aiogram sqlalchemy pydantic_settings asyncpg

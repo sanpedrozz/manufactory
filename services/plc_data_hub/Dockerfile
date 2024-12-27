@@ -32,5 +32,5 @@ COPY services/plc_data_hub/src /app/services/plc_data_hub/src
 COPY shared /app/shared
 COPY .env /app/.env
 
-# Запуск сервиса (запускаем main.py с initialize_readers)
+# Запуск сервиса
 CMD ["python", "services/plc_data_hub/src/app.py"]
