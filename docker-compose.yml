@@ -5,9 +5,12 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - alarms_service
-      - item_checker_service
-#      - plc_data_service
+      alarms_service:
+        condition: service_healthy
+      item_checker_service:
+        condition: service_healthy
+
+    #      - plc_data_service
     networks:
       - app-network
 
@@ -22,8 +25,14 @@ services:
       - UVICORN_PORT=8000
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-#  plc_data_service:
+
+  #  plc_data_service:
 #    restart: always
 #    build:
 #      context: .
@@ -44,6 +53,12 @@ services:
       - UVICORN_PORT=8000
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 
   api_service:
     restart: always
