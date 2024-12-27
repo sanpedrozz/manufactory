@@ -14,3 +14,4 @@ class Place(Base):
 
     operations = relationship("OperationHistory", back_populates="place", cascade="all, delete-orphan")
     alarm_histories = relationship("AlarmHistory", back_populates="place", cascade="all, delete-orphan")
+    sensor_histories = relationship("SensorHistory", back_populates="place", cascade="all, delete-orphan")
