@@ -5,7 +5,7 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      alarms_service:
+      alarm_service:
         condition: service_healthy
       item_checker_service:
         condition: service_healthy
@@ -14,7 +14,7 @@ services:
     networks:
       - app-network
 
-  alarms_service:
+  alarm_service:
     restart: always
     build:
       context: .
