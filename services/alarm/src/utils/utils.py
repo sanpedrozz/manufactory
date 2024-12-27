@@ -13,6 +13,7 @@ async def send_alarm_to_telegram(alarm: Alarm, dt):
 
         stmt = (
             select(Place, AlarmMessage, AlarmTag)
+            .select_from(Place)
             .join(AlarmMessage, alarm_id == AlarmMessage.id)
             .join(AlarmTag, AlarmTag.id == AlarmMessage.tag_id, isouter=True)
             .where(place_id == Place.id)
