@@ -1,8 +1,22 @@
 from pydantic import BaseModel
-from . import models
+
+from . import plc_models
+
+#   Размер name и type
+NAME_SIZE = 20
+TYPE_SIZE = 30
+
+# Словарь для смещений данных
+OFFSETS = {
+    'name': 0,
+    'type': NAME_SIZE + 2,
+    'db': TYPE_SIZE + NAME_SIZE + 4,
+    'byte': TYPE_SIZE + NAME_SIZE + 6,
+    'bit': TYPE_SIZE + NAME_SIZE + 8
+}
 
 
-class Tag(BaseModel):
+class PLCTag(BaseModel):
     name: str
     type: str
     db: int
@@ -10,12 +24,18 @@ class Tag(BaseModel):
     bit: int
 
     @classmethod
-    def from_data(cls, data: bytes, offset: int) -> "Parameter":
-        """Метод для извлечения данных и создания объекта Parameter."""
+    def get_tag(cls, data: bytes, offset: int) -> "PLCTag":
+        """
+        Создает объект PLCTag на основе сырых данных и смещения.
+
+        :param data: Сырые данные из PLC
+        :param offset: Смещение, с которого начинаются данные
+        :return: Объект PLCTag с извлеченными данными
+        """
         return cls(
-            name=models['String[20]'].read_func(data, offset),
-            type=models['String[30]'].read_func(data, offset + 22),
-            db=models['UInt'].read_func(data, offset + 54),
-            byte=models['UInt'].read_func(data, offset + 56),
-            bit=models['USInt'].read_func(data, offset + 58)
+            name=plc_models['String[20]'].read_func(data, offset + OFFSETS['name']),
+            type=plc_models['String[30]'].read_func(data, offset + OFFSETS['type']),
+            db=plc_models['UInt'].read_func(data, offset + OFFSETS['db']),
+            byte=plc_models['UInt'].read_func(data, offset + OFFSETS['byte']),
+            bit=plc_models['USInt'].read_func(data, offset + OFFSETS['bit'])
         )

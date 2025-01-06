@@ -1,6 +1,6 @@
 import asyncio
 
-from services.plc_reader.src.plc import PLCClient, models
+from services.plc_reader.src.plc import PLCClient, plc_models, PLCTag
 from shared.config import settings
 from shared.logger.logger import logger
 
@@ -23,27 +23,22 @@ class Reader:
         :return: Количество заполненных элементов.
         """
         data = self.client.read_data(db_number=settings.DB_NUMBER, offset=0, size=2)
-        return models['UInt'].read_func(data, 0)
+        return plc_models['UInt'].read_func(data, 0)
 
-    async def _fetch_parameters(self, filled_array):
+    async def _fetch_parameters(self, filled_array: int):
         """
-        Чтение данных массива из PLC и преобразует их в список словарей.
+        Чтение данных массива из PLC и преобразует их в список объектов Tag.
         :param filled_array: Количество элементов, которые нужно прочитать.
-        :return: Список словарей с информацией о каждом элементе массива.
+        :return: Список объектов Tag с информацией о каждом элементе массива.
         """
-        data_list = []
-        # Чтение всех данных одним запросом, если возможно
+        tags = []
         for i in range(filled_array):
             data = self.client.read_data(db_number=settings.DB_NUMBER, offset=2 + 60 * i, size=60)
-            data_dict = {
-                'name': models['String[20]'].read_func(data, 0),
-                'type': models['String[30]'].read_func(data, 22),
-                'db': models['UInt'].read_func(data, 54),
-                'byte': models['UInt'].read_func(data, 56),
-                'bit': models['USInt'].read_func(data, 58)
-            }
-            data_list.append(data_dict)
-        return data_list
+            tag = PLCTag.get_tag(data, 0)
+            tags.append(tag)
+            print(tag.name)
+
+        return tags
 
     async def _fetch_plc_data(self):
         """
@@ -59,7 +54,7 @@ class Reader:
             data_type = entry['type']
 
             # Определяем модель на основе типа данных
-            model = models.get(data_type)
+            model = plc_models.get(data_type)
             if model:
                 # Читаем данные из указанного DB, используя смещение в байтах и бите
                 data = self.client.read_data(db_number=db_number, offset=byte_offset, size=model.size)
