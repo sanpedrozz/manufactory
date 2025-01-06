@@ -1,5 +1,5 @@
 from .plc_client import PLCClient
-from .plc_data_models import (
+from .plc_models import (
     DataType,
     StringDataType,
     IntDataType,
