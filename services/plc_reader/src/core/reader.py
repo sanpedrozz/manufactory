@@ -1,21 +1,15 @@
 import asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.plc_data_hub.src.plc import PLCClient, models
+from services.plc_reader.src.plc import PLCClient, models
 from shared.config import settings
-# from shared.db.manufactory.models import SensorHistory
 from shared.logger.logger import logger
 
 
 class Reader:
     """Класс для взаимодействия с ПЛК, чтения данных из заданного DB и извлечения информации о типах данных."""
 
-    def __init__(self, ip: str, db_session: AsyncSession):
-        if db_session is None:
-            raise ValueError("db_session не может быть None")  # Дополнительная проверка
+    def __init__(self, ip: str):
         self.client = PLCClient(ip)
-        self.db_session = db_session
         self.parameter_list = []
         self.parameter_count = 0
         self.current_values = {}
@@ -75,28 +69,6 @@ class Reader:
             else:
                 logger.warning(f"Неизвестный тип данных: {data_type} для параметра {entry['name']}")
 
-    # async def save_changes(self):
-    #     """
-    #     Сохраняет изменения в базу данных, если значения отличаются от предыдущих.
-    #     """
-    #     for name, value in self.current_values.items():
-    #         if isinstance(value, list):  # Если это список словарей
-    #             current_items = value
-    #             previous_items = self.previous_values.get(name, [])
-    #
-    #             # Сравниваем элементы списка
-    #             for current_item in current_items:
-    #                 if current_item not in previous_items:
-    #                     new_data = PLCData(name=name, value=str(current_item))
-    #                     await new_data.add(self.db_session)
-    #
-    #         elif self.previous_values.get(name) != value:  # Если это не список
-    #             new_data = PLCData(name=name, value=str(value))
-    #             await new_data.add(self.db_session)
-    #
-    #     # Обновляем last_readings
-    #     self.previous_values = self.current_values.copy()
-
     async def run(self):
         """
         Основной цикл чтения данных из PLC.
@@ -110,5 +82,4 @@ class Reader:
                     self.previous_parameter_count = self.current_parameter_count
 
                 await self._fetch_plc_data()
-                # await self.save_changes()
                 await asyncio.sleep(0.1)

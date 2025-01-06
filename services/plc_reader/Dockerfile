@@ -34,4 +34,4 @@ COPY shared /app/shared
 COPY .env /app/.env
 
 # Запуск сервиса
-CMD ["sh", "-c", "uvicorn services.plc_data_hub.src.app:app --host 0.0.0.0 --port ${UVICORN_PORT}"]
+CMD ["sh", "-c", "uvicorn services.plc_reader.src.app:app --host 0.0.0.0 --port ${UVICORN_PORT}"]

@@ -9,7 +9,6 @@ services:
         condition: service_healthy
       item_checker_service:
         condition: service_healthy
-
     #      - plc_data_service
     networks:
       - app-network
@@ -32,15 +31,19 @@ services:
       retries: 3
 
 
-  #  plc_data_service:
+  plc_reader_service:
 #    restart: always
-#    build:
-#      context: .
-#      dockerfile: services/plc_data_hub/Dockerfile
-#    volumes:
-#      - ./shared:/app/shared
-#    networks:
-#      - app-network
+    build:
+      context: .
+      dockerfile: services/plc_reader/Dockerfile
+      args:
+        BASE_PATH: services/plc_reader
+    environment:
+      - UVICORN_PORT=8000
+    volumes:
+      - ./shared:/app/shared
+    networks:
+      - app-network
 
   item_checker_service:
     restart: always

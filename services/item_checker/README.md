@@ -1,1 +1,1 @@
-poetry add fastapi jinja2 uvicorn sqlalchemy pydantic_settings asyncpg python-multipart greenlet 
+poetry add fastapi jinja2 uvicorn sqlalchemy pydantic_settings asyncpg python-multipart greenlet greenlet
