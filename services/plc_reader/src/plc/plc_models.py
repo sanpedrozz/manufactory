@@ -105,7 +105,7 @@ class ArrayDataType(DataType):
         return self.base_type.read_func(buffer, element_offset)
 
 
-models = {
+plc_models = {
     'Int': IntDataType(),
     'Real': RealDataType(),
     'Bool': BoolDataType(),
@@ -115,13 +115,13 @@ models = {
     'String': StringDataType()
 }
 
-models.update({f'String[{i}]': StringDataType(i) for i in range(1, 255)})
+plc_models.update({f'String[{i}]': StringDataType(i) for i in range(1, 255)})
 
 for size in range(1, 255):
-    models.update({
+    plc_models.update({
         f'Array[1..10] of String[{size}]': ArrayDataType(StringDataType(size), 1, 10)}
     )
 
 if __name__ == '__main__':
-    for key in models:
-        print(f"{key}: {models[key].size} байт")
+    for key in plc_models:
+        print(f"{key}: {plc_models[key].size} байт")
