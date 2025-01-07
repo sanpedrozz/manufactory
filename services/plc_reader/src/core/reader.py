@@ -52,4 +52,4 @@ class Reader(TagManager, DataProcessor):
                 await self._processor_plc_data()
 
                 # Задержка перед следующим циклом
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.1)
