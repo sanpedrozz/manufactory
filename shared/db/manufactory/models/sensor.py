@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger
+from sqlalchemy import Column, String, BigInteger, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from shared.db.base import Base
@@ -12,3 +12,7 @@ class Sensor(Base):
     description = Column(String(500), nullable=True)
 
     sensor_histories = relationship("SensorHistory", back_populates="sensor", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint('name', name='unique_sensor_name'),
+    )

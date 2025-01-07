@@ -38,7 +38,6 @@ class Reader(TagManager, DataProcessor):
 
     async def run(self) -> None:
         """Основной цикл чтения и обработки данных из PLC."""
-        await self.initialize()
         prev_tag_count = 0
 
         with self.client:

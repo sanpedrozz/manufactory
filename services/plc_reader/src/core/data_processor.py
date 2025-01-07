@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Dict, Any, Callable
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.plc_reader.src.core.sensor_cache import SensorCache
@@ -44,7 +45,20 @@ class DataProcessor:
                 await self.save_sensor_history(session, sensor_id, value)
 
     async def save_sensor_history(self, session: AsyncSession, sensor_id: int, value: Any) -> None:
-        """Сохраняет запись в sensor_history."""
+        """Сохраняет запись в sensor_history, если такой записи еще нет."""
+        # Проверяем наличие записи
+        existing_entry = await session.execute(
+            select(SensorHistory).where(
+                SensorHistory.sensor_id == sensor_id,
+                SensorHistory.place_id == self.place_id,
+                SensorHistory.value == str(value)
+            )
+        )
+        if existing_entry.scalars().first():
+            # Запись уже существует
+            return
+
+        # Добавляем новую запись
         new_history = SensorHistory(
             value=str(value),
             dt_created=datetime.utcnow(),

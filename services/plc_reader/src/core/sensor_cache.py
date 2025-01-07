@@ -1,5 +1,6 @@
 from typing import Dict
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -28,11 +29,19 @@ class SensorCache:
         if name in self.cache:
             return self.cache[name]
 
-        # Создаем новый сенсор в таблице
+        # Пытаемся создать новый сенсор
         new_sensor = Sensor(name=name)
         session.add(new_sensor)
-        await session.flush()  # Генерирует ID для нового сенсора
-
-        # Добавляем в кэш
-        self.cache[name] = new_sensor.id
-        return new_sensor.id
+        try:
+            await session.flush()  # Генерирует ID для нового сенсора
+            self.cache[name] = new_sensor.id  # Добавляем в кэш
+            return new_sensor.id
+        except IntegrityError:
+            await session.rollback()
+            # Если запись уже существует, загружаем ее ID
+            existing_sensor = await session.execute(select(Sensor).where(Sensor.name == name))
+            sensor = existing_sensor.scalars().first()
+            if sensor:
+                self.cache[name] = sensor.id  # Добавляем в кэш
+                return sensor.id
+            raise

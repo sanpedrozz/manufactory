@@ -52,4 +52,5 @@ async def shutdown_event():
 
 async def initialize_readers(place: Place):
     reader = Reader(place)
+    await reader.initialize()
     await reader.run()
