@@ -9,7 +9,8 @@ services:
         condition: service_healthy
       item_checker_service:
         condition: service_healthy
-    #      - plc_data_service
+      plc_reader_service:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -30,9 +31,8 @@ services:
       timeout: 5s
       retries: 3
 
-
   plc_reader_service:
-#    restart: always
+    restart: always
     build:
       context: .
       dockerfile: services/plc_reader/Dockerfile
@@ -44,6 +44,11 @@ services:
       - ./shared:/app/shared
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   item_checker_service:
     restart: always
