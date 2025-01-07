@@ -5,15 +5,22 @@ from . import plc_models
 #   Размер name и type
 NAME_SIZE = 20
 TYPE_SIZE = 30
+ADD_STR_SIZE = 2
+DB_SIZE = 2
+BYTE_SIZE = 2
+BIT_SIZE = 2
 
 # Словарь для смещений данных
 OFFSETS = {
     'name': 0,
-    'type': NAME_SIZE + 2,
-    'db': TYPE_SIZE + NAME_SIZE + 4,
-    'byte': TYPE_SIZE + NAME_SIZE + 6,
-    'bit': TYPE_SIZE + NAME_SIZE + 8
+    'type': NAME_SIZE + ADD_STR_SIZE,
+    'db': TYPE_SIZE + NAME_SIZE + ADD_STR_SIZE * 2,
+    'byte': TYPE_SIZE + NAME_SIZE + ADD_STR_SIZE * 2 + DB_SIZE,
+    'bit': TYPE_SIZE + NAME_SIZE + ADD_STR_SIZE * 2 + DB_SIZE + BYTE_SIZE,
 }
+
+# Полный размер
+FULL_SIZE = TYPE_SIZE + NAME_SIZE + ADD_STR_SIZE * 2 + DB_SIZE + BYTE_SIZE + BIT_SIZE
 
 
 class PLCTag(BaseModel):
