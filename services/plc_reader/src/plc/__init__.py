@@ -10,7 +10,7 @@ from .plc_models import (
     DIntDataType,
     plc_models
 )
-from .plc_tag import PLCTag
+from .plc_tag import PLCTag, FULL_SIZE
 
 __all__ = [
     "PLCClient",
@@ -23,5 +23,5 @@ __all__ = [
     "USIntDataType",
     "DIntDataType",
     "plc_models",
-    "PLCTag"
+    "PLCTag", "FULL_SIZE"
 ]
