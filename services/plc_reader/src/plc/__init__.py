@@ -8,8 +8,9 @@ from .plc_models import (
     UIntDataType,
     USIntDataType,
     DIntDataType,
-    models
+    plc_models
 )
+from .plc_tag import PLCTag
 
 __all__ = [
     "PLCClient",
@@ -21,5 +22,6 @@ __all__ = [
     "UIntDataType",
     "USIntDataType",
     "DIntDataType",
-    "models"
+    "plc_models",
+    "PLCTag"
 ]
