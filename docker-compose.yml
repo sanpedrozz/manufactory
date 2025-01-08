@@ -6,11 +6,11 @@ services:
       - "8000:80"
     depends_on:
       alarm_service:
-        condition: service_healthy
+        condition: service_started
       item_checker_service:
-        condition: service_healthy
+        condition: service_started
       plc_reader_service:
-        condition: service_healthy
+        condition: service_started
     networks:
       - app-network
 
@@ -25,11 +25,6 @@ services:
       - UVICORN_PORT=8000
     networks:
       - app-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   plc_reader_service:
     restart: always
@@ -44,11 +39,6 @@ services:
       - ./shared:/app/shared
     networks:
       - app-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   item_checker_service:
     restart: always
@@ -61,12 +51,6 @@ services:
       - UVICORN_PORT=8000
     networks:
       - app-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
 
   api_service:
     restart: always
