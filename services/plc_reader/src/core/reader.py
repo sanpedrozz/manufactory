@@ -48,7 +48,7 @@ class Reader(TagManager, DataProcessor):
                 # Чтение данных из PLC
                 await self._read_plc_data()
 
-                # Сохранение обработанных данных
+                # Обработка данных
                 await self._processor_plc_data()
 
                 # Задержка перед следующим циклом
