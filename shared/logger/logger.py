@@ -20,10 +20,10 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 # Создание объекта logger
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.WARNING, handlers=[stream_handler])
 
-logger.addHandler(stream_handler)
-logger.setLevel(logging.DEBUG)
+# Создание объекта logger
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     logger.debug('Debug message')
@@ -31,5 +31,7 @@ if __name__ == '__main__':
     logger.warning('Warning message')
     logger.error('Error message')
     logger.critical('Critical message')
-    logger.exception('Exception message')
-    raise ValueError("An example exception")
+    try:
+        raise ValueError("An example exception")
+    except ValueError as e:
+        logger.exception('Exception occurred')
