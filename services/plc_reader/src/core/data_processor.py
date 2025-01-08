@@ -49,9 +49,9 @@ class DataProcessor:
         # Проверяем наличие записи
         existing_entry = await session.execute(
             select(SensorHistory).where(
-                SensorHistory.sensor_id == sensor_id,
-                SensorHistory.place_id == self.place_id,
-                SensorHistory.value == str(value)
+                sensor_id == SensorHistory.sensor_id,
+                self.place_id == SensorHistory.place_id,
+                str(value) == SensorHistory.value
             )
         )
         if existing_entry.scalars().first():
