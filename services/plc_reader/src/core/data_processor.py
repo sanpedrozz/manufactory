@@ -28,22 +28,6 @@ class DataProcessor:
         async with AsyncSessionFactory() as session:
             await self.sensor_cache.load_cache(session)
 
-    async def process_out_data(self, key: str, values: List[Any]) -> None:
-        """Асинхронная обработка данных для outDataNonVerify и outDataVerify."""
-        async with AsyncSessionFactory() as session:
-            prev_values = self.previous_values.get(key, [])
-            new_values = [value for value in values if value not in prev_values]
-            for value in new_values:
-                sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
-                await self.save_sensor_history(session, sensor_id, value)
-
-    async def process_default(self, key: str, value: Any) -> None:
-        """Асинхронная обработка данных по умолчанию для остальных ключей."""
-        async with AsyncSessionFactory() as session:
-            if self.previous_values.get(key) != value:
-                sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
-                await self.save_sensor_history(session, sensor_id, value)
-
     async def save_sensor_history(self, session: AsyncSession, sensor_id: int, value: Any) -> None:
         """Сохраняет запись в sensor_history, если такой записи еще нет."""
         # Проверяем наличие записи
@@ -67,3 +51,19 @@ class DataProcessor:
         )
         session.add(new_history)
         await session.commit()
+
+    async def process_out_data(self, key: str, values: List[Any]) -> None:
+        """Асинхронная обработка данных для outDataNonVerify и outDataVerify."""
+        async with AsyncSessionFactory() as session:
+            prev_values = self.previous_values.get(key, [])
+            new_values = [value for value in values if value not in prev_values]
+            for value in new_values:
+                sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
+                await self.save_sensor_history(session, sensor_id, value)
+
+    async def process_default(self, key: str, value: Any) -> None:
+        """Асинхронная обработка данных по умолчанию для остальных ключей."""
+        async with AsyncSessionFactory() as session:
+            if self.previous_values.get(key) != value:
+                sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
+                await self.save_sensor_history(session, sensor_id, value)

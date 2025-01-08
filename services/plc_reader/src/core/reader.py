@@ -28,7 +28,7 @@ class Reader(TagManager, DataProcessor):
             data = self.client.read_data(db_number=tag.db, offset=tag.byte, size=model.size)
             self.current_values[tag.name] = model.read_func(data, tag.bit)
 
-    async def _processor_plc_data(self) -> None:
+    async def _process_plc_data(self) -> None:
         """Сохранение изменений в данные, если значения изменились."""
         for key, value in self.current_values.items():
             processor = self.processors.get(key, self.process_default)
@@ -49,7 +49,7 @@ class Reader(TagManager, DataProcessor):
                 await self._read_plc_data()
 
                 # Обработка данных
-                await self._processor_plc_data()
+                await self._process_plc_data()
 
                 # Задержка перед следующим циклом
                 await asyncio.sleep(0.1)
