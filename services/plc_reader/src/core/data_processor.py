@@ -65,5 +65,6 @@ class DataProcessor:
         """Асинхронная обработка данных по умолчанию для остальных ключей."""
         async with AsyncSessionFactory() as session:
             if self.previous_values.get(key) != value:
+                print(self.previous_values.get(key), value)
                 sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
                 await self.save_sensor_history(session, sensor_id, value)
