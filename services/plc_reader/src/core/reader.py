@@ -31,9 +31,13 @@ class Reader(TagManager, DataProcessor):
 
             try:
                 data = self.client.read_data(db_number=tag.db, offset=tag.byte, size=model.size)
-                self.current_values[tag.name] = model.read_func(data, tag.bit)
             except Exception as e:
                 self.logger.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
+
+            try:
+                self.current_values[tag.name] = model.read_func(data, tag.bit)
+            except Exception as e:
+                self.logger.error(f"Ошибка разбора данных в {self.place.name} для тега {tag.name}: {e}")
 
     async def _process_plc_data(self) -> None:
         """Сохранение изменений в данные, если значения изменились."""
