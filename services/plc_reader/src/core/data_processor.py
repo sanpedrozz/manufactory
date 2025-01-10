@@ -38,10 +38,13 @@ class DataProcessor:
                 str(value) == SensorHistory.value
             )
         )
-
+        print(f"1 - {sensor_id, self.place_id, value}")
         if existing_entry.scalars().first():
+            print(f"2 - {sensor_id, self.place_id, value}")
+
             # Запись уже существует
             return
+        print(f"3 - {sensor_id, self.place_id, value}")
 
         # Добавляем новую запись
         new_history = SensorHistory(
@@ -50,7 +53,6 @@ class DataProcessor:
             place_id=self.place_id,
             sensor_id=sensor_id,
         )
-        print("!!!!NEN")
         session.add(new_history)
         await session.commit()
 
