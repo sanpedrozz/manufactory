@@ -16,7 +16,7 @@ class Reader(TagManager, DataProcessor):
         DataProcessor.__init__(self, place.id)
         self.place = place
         self.logger = logger.getChild("Reader")
-        self.logger.setLevel(logging.WARNING)
+        self.logger.setLevel(logging.INFO)
 
     async def _read_plc_data(self) -> None:
         """Чтение данных из PLC и сохранение в текущих значениях."""
