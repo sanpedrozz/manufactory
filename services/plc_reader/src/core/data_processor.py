@@ -41,8 +41,6 @@ class DataProcessor:
 
         if existing_entry.scalars().first():
             # Запись уже существует
-            print(f'{sensor_id, self.place_id, value, str(value)}')
-
             return
 
         # Добавляем новую запись
@@ -52,6 +50,7 @@ class DataProcessor:
             place_id=self.place_id,
             sensor_id=sensor_id,
         )
+        print("!!!!NEN")
         session.add(new_history)
         await session.commit()
 
