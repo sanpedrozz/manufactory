@@ -37,7 +37,7 @@ class Reader(TagManager, DataProcessor):
             try:
                 if tag.type == "Bool":
                     self.current_values[tag.name] = model.read_func(data, 0, tag.bit)
-                    print(self.current_values[tag.name])
+                    print(f'{tag.name} {self.current_values[tag.name]}')
                 else:
                     self.current_values[tag.name] = model.read_func(data, 0)
             except Exception as e:
