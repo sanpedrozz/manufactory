@@ -41,7 +41,7 @@ class DataProcessor:
 
         if existing_entry.scalars().first():
             # Запись уже существует
-            print('sensor_id, self.place_id, value, str(value)')
+            print(f'{sensor_id, self.place_id, value, str(value)}')
 
             return
 
