@@ -35,7 +35,10 @@ class Reader(TagManager, DataProcessor):
                 self.logger.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
 
             try:
-                self.current_values[tag.name] = model.read_func(data, tag.bit)
+                if tag.type == "Bool":
+                    self.current_values[tag.name] = model.read_func(data, 0, tag.bit)
+                else:
+                    self.current_values[tag.name] = model.read_func(data, 0)
             except Exception as e:
                 self.logger.error(f"Ошибка разбора данных в {self.place.name} для тега {tag.name}: {e}")
 
