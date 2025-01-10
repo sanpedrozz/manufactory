@@ -48,26 +48,49 @@ class Settings(BaseSettings):
     DB_NUMBER: int
 
     @staticmethod
-    def _get_postgres_url(user: str, password: str, host: str, db: str) -> PostgresDsn:
-        url = f"postgresql+asyncpg://{user}:{password}@{host}/{db}"
+    def _get_postgres_url(user: str, password: str, host: str, db: str, async_mode: bool) -> PostgresDsn:
+        protocol = "postgresql+asyncpg" if async_mode else "postgresql"
+        url = f"{protocol}://{user}:{password}@{host}/{db}"
         return PostgresDsn(url)  # Создание PostgresDsn из строки
 
     @property
-    def manufactory_db_url(self) -> PostgresDsn:
+    def manufactory_db_url_async(self) -> PostgresDsn:
         return self._get_postgres_url(
             self.POSTGRES_USER_MANUFACTORY,
             self.POSTGRES_PASSWORD_MANUFACTORY,
             self.POSTGRES_HOST_MANUFACTORY,
             self.POSTGRES_DB_MANUFACTORY,
+            async_mode=True,
         )
 
     @property
-    def industrial_db_url(self) -> PostgresDsn:
+    def manufactory_db_url_sync(self) -> PostgresDsn:
+        return self._get_postgres_url(
+            self.POSTGRES_USER_MANUFACTORY,
+            self.POSTGRES_PASSWORD_MANUFACTORY,
+            self.POSTGRES_HOST_MANUFACTORY,
+            self.POSTGRES_DB_MANUFACTORY,
+            async_mode=False,
+        )
+
+    @property
+    def industrial_db_url_async(self) -> PostgresDsn:
         return self._get_postgres_url(
             self.POSTGRES_USER_INDUSTRIAL,
             self.POSTGRES_PASSWORD_INDUSTRIAL,
             self.POSTGRES_HOST_INDUSTRIAL,
             self.POSTGRES_DB_INDUSTRIAL,
+            async_mode=True,
+        )
+
+    @property
+    def industrial_db_url_sync(self) -> PostgresDsn:
+        return self._get_postgres_url(
+            self.POSTGRES_USER_INDUSTRIAL,
+            self.POSTGRES_PASSWORD_INDUSTRIAL,
+            self.POSTGRES_HOST_INDUSTRIAL,
+            self.POSTGRES_DB_INDUSTRIAL,
+            async_mode=False,
         )
 
 

@@ -14,7 +14,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Устанавливаем строку подключения из Settings
-config.set_main_option("sqlalchemy.url", f"{settings.manufactory_db_url}?async_fallback=True")
+config.set_main_option("sqlalchemy.url", f"{settings.manufactory_db_url_async}?async_fallback=True")
 
 # Импортируем модели для автоматической генерации миграций
 from shared.db.base import Base
