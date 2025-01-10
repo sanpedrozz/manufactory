@@ -38,6 +38,8 @@ class DataProcessor:
                 str(value) == SensorHistory.value
             )
         )
+        print(existing_entry)
+
         if existing_entry.scalars().first():
             # Запись уже существует
             return
@@ -66,5 +68,4 @@ class DataProcessor:
         async with AsyncSessionFactory() as session:
             if self.previous_values.get(key) != value:
                 sensor_id = await self.sensor_cache.get_or_create_sensor_id(session, key)
-                print(sensor_id, self.previous_values.get(key), value)
                 await self.save_sensor_history(session, sensor_id, value)
