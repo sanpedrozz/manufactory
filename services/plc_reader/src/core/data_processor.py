@@ -38,10 +38,11 @@ class DataProcessor:
                 str(value) == SensorHistory.value
             )
         )
-        print(sensor_id, self.place_id, value, str(value))
 
         if existing_entry.scalars().first():
             # Запись уже существует
+            print('sensor_id, self.place_id, value, str(value)')
+
             return
 
         # Добавляем новую запись
