@@ -1,7 +1,8 @@
 import logging
 
-from sqlalchemy import create_engine, sessionmaker
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from shared.config.config import settings
 

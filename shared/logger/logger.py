@@ -20,7 +20,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 
 # Создание объекта logger
-logging.basicConfig(level=logging.WARNING, handlers=[stream_handler])
+logging.basicConfig(level=logging.INFO, handlers=[stream_handler])
 
 # Создание объекта logger
 logger = logging.getLogger(__name__)

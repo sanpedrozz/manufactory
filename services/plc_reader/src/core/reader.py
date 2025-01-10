@@ -18,7 +18,7 @@ class Reader(TagManager, DataProcessor):
         self.logger = logger.getChild("Reader")
         self.logger.setLevel(logging.INFO)
 
-    async def _read_plc_data(self) -> None:
+    def _read_plc_data(self) -> None:
         """Чтение данных из PLC и сохранение в текущих значениях."""
         self.current_values.clear()
 
@@ -31,23 +31,19 @@ class Reader(TagManager, DataProcessor):
 
             try:
                 data = self.client.read_data(db_number=tag.db, offset=tag.byte, size=model.size)
-            except Exception as e:
-                self.logger.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
-
-            try:
                 if tag.type == "Bool":
                     self.current_values[tag.name] = model.read_func(data, 0, tag.bit)
                 else:
                     self.current_values[tag.name] = model.read_func(data, 0)
             except Exception as e:
-                self.logger.error(f"Ошибка разбора данных в {self.place.name} для тега {tag.name}: {e}")
+                self.logger.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
 
-    async def _process_plc_data(self) -> None:
+    def _process_plc_data(self) -> None:
         """Сохранение изменений в данные, если значения изменились."""
         for key, value in self.current_values.items():
             processor = self.processors.get(key, self.process_default)
             try:
-                await processor(key, value)
+                processor(key, value)
             except Exception as e:
                 self.logger.error(f"Ошибка обработки данных в {self.place.name} для ключа {key}: {e}")
 
@@ -59,15 +55,16 @@ class Reader(TagManager, DataProcessor):
 
         with self.client:
             while True:
+                print(self.place.name)
                 try:
                     # Обновляем теги, если их количество изменилось
                     prev_tag_count = self.update_tags(prev_tag_count)
 
                     # Чтение данных из PLC
-                    await self._read_plc_data()
+                    self._read_plc_data()
 
                     # Обработка данных
-                    await self._process_plc_data()
+                    self._process_plc_data()
 
                 except Exception as e:
                     self.logger.error(f"Ошибка в основном цикле Reader: {e}")

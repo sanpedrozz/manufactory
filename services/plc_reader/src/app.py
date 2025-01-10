@@ -33,7 +33,7 @@ async def on_startup():
 
     for place in places:
         logger.info(f"Инициализация Reader для {place.name} ({place.ip})")
-        plc_readers[place.name] = asyncio.create_task(initialize_readers(place))
+        plc_readers[place.name] = asyncio.create_task(run_readers(place))
 
     logger.info("Приложение успешно запущено и PLC инициализированы.")
 
@@ -50,7 +50,7 @@ async def shutdown_event():
         logger.info(f"Остановлена обработка задач для роботов с IP: {name}")
 
 
-async def initialize_readers(place: Place):
+async def run_readers(place: Place):
     reader = Reader(place)
-    await reader.initialize()
+    reader.initialize()
     await reader.run()

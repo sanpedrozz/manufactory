@@ -28,3 +28,29 @@ async def save_to_db(data: dict):
         )
         session.add(sensor_history)
         await session.commit()
+
+
+# async def save_sensor_history(self, session: AsyncSession, sensor_id: int, value: Any) -> None:
+#     """Сохраняет запись в sensor_history, если такой записи еще нет."""
+#     # Проверяем наличие записи
+#     existing_entry = await session.execute(
+#         select(SensorHistory).where(
+#             sensor_id == SensorHistory.sensor_id,
+#             self.place_id == SensorHistory.place_id,
+#             str(value) == SensorHistory.value
+#         )
+#     )
+#
+#     if existing_entry.scalars().first():
+#         # Запись уже существует
+#         return
+#
+#     # Добавляем новую запись
+#     new_history = SensorHistory(
+#         value=str(value),
+#         dt_created=datetime.utcnow(),
+#         place_id=self.place_id,
+#         sensor_id=sensor_id,
+#     )
+#     session.add(new_history)
+#     await session.commit()
