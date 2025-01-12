@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     #   PLC
     DB_NUMBER: int
 
+    #   Redis
+    REDIS_HOST: str
+    REDIS_PORT: int
+
     @staticmethod
     def _get_postgres_url(user: str, password: str, host: str, db: str, async_mode: bool) -> PostgresDsn:
         protocol = "postgresql+asyncpg" if async_mode else "postgresql"
