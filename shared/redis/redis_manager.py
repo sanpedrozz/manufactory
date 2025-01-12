@@ -4,7 +4,7 @@ import redis
 
 
 class RedisManager:
-    def __init__(self, host='localhost', port=6379, db=0):
+    def __init__(self, host='redis', port=6379, db=0):
         self.client = redis.StrictRedis(host=host, port=port, db=db, decode_responses=True)
 
     def add_to_queue(self, queue_name: str, data: dict):
@@ -14,11 +14,21 @@ class RedisManager:
 
     def get_from_queue(self, queue_name: str):
         """Получить данные из очереди."""
-        serialized_data = self.client.lpop(queue_name)
-        if serialized_data:
-            return json.loads(serialized_data)
+        data = self.client.lpop(queue_name)
+        if data:
+            return json.loads(data)
         return None
+
+    def get_all_from_queue(self, queue_name: str) -> list:
+        """Получить все данные из очереди."""
+        data = self.client.lrange(queue_name, 0, -1)
+        self.client.ltrim(queue_name, len(data), -1)  # Удаляем все элементы после извлечения
+        return [json.loads(item) for item in data]
 
     def get_queue_length(self, queue_name: str) -> int:
         """Получить длину очереди."""
         return self.client.llen(queue_name)
+
+    def get_all_keys(self) -> list:
+        """Получить список всех ключей в Redis."""
+        return self.client.keys("*")
