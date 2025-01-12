@@ -34,11 +34,11 @@ class DataProcessor:
         """Обработка данных для outDataNonVerify и outDataVerify."""
         prev_values = self.previous_values.get(key, [])
         new_values = [value for value in values if value not in prev_values]
-        self.sensor_cache.get_or_create_sensor_id(key)
+        sensor_id = self.sensor_cache.get_or_create_sensor_id(key)
         for value in new_values:
             data = {
                 "place_id": self.place_id,
-                "key": key,
+                "sensor_id": sensor_id,
                 "value": value,
                 "timestamp": datetime.utcnow().isoformat(),
             }
