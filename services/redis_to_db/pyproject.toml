@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "redis-to-db"
+version = "0.1.0"
+description = ""
+authors = ["petrl <sup686@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+redis = "^5.2.1"
+fastapi = "^0.115.6"
+uvicorn = "^0.34.0"
+colorlog = "^6.9.0"
+sqlalchemy = "^2.0.37"
+asyncpg = "^0.30.0"
+pydantic-settings = "^2.7.1"
+psycopg2-binary = "^2.9.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

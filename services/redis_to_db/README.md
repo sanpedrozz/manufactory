@@ -1,0 +1,1 @@
+poetry add fastapi redis uvicorn colorlog sqlalchemy pydantic_settings asyncpg psycopg2-binary
