@@ -50,6 +50,8 @@ class Settings(BaseSettings):
     #   Redis
     REDIS_HOST: str
     REDIS_PORT: int
+    REDIS_MAX_QUEUE_SIZE: int
+    REDIS_ASYNC_SLEEP_INTERVAL: int
 
     @staticmethod
     def _get_postgres_url(user: str, password: str, host: str, db: str, async_mode: bool) -> PostgresDsn:
