@@ -55,7 +55,6 @@ class Reader(TagManager, DataProcessor):
 
         with self.client:
             while True:
-                print(self.place.name)
                 try:
                     # Обновляем теги, если их количество изменилось
                     prev_tag_count = self.update_tags(prev_tag_count)
