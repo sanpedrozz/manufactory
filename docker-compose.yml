@@ -62,6 +62,22 @@ services:
     networks:
       - app-network
 
+  redis_to_db_service:
+    restart: always
+    build:
+      context: .
+      dockerfile: services/redis_to_db/Dockerfile
+      args:
+        BASE_PATH: services/redis_to_db
+    environment:
+      - UVICORN_PORT=8000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./shared:/app/shared
+    networks:
+      - app-network
+
   api_service:
     restart: always
     build: .
