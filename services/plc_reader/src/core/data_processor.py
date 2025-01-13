@@ -1,11 +1,11 @@
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Callable
-from zoneinfo import ZoneInfo
 
 from services.plc_reader.src.core.sensor_cache import SensorCache
 from shared.logger.logger import logger
 from shared.redis import RedisManager
+from zoneinfo import ZoneInfo
 
 
 class DataProcessor:
@@ -41,7 +41,7 @@ class DataProcessor:
                 "place_id": self.place_id,
                 "sensor_id": sensor_id,
                 "value": value,
-                "timestamp": datetime.now(ZoneInfo("Europe/Moscow")).replace(tzinfo=None)
+                "timestamp": datetime.now(),
             }
             self.redis_manager.add_to_queue(self.queue_name, data)
 
@@ -53,7 +53,6 @@ class DataProcessor:
                 "place_id": self.place_id,
                 "sensor_id": sensor_id,
                 "value": value,
-
-                "timestamp": datetime.now(ZoneInfo("Europe/Moscow")).replace(tzinfo=None)
+                "timestamp": datetime.now(),
             }
             self.redis_manager.add_to_queue(self.queue_name, data)
