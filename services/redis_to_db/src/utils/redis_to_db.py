@@ -18,6 +18,7 @@ async def process_queue(queue_name: str, redis_manager: RedisManager):
     """Обработка всех очередей."""
     try:
         data_list = redis_manager.get_all_from_queue(queue_name)
+        logger.debug(f"Данные из очереди {queue_name}: {data_list}")
         if data_list:
             await save_to_db(data_list)
     except Exception as e:
@@ -28,17 +29,25 @@ async def save_to_db(data_list: list[dict]):
     """Записать данные в базу данных пачкой."""
     try:
         async with AsyncSessionFactory() as session:
-            sensor_histories = [
-                SensorHistory(
-                    value=str(data["value"]),
-                    place_id=data["place_id"],
-                    dt_created=datetime.fromisoformat(data["timestamp"]),
-                    sensor_id=data["sensor_id"]
-                )
-                for data in data_list
-            ]
-            session.add_all(sensor_histories)
-            await session.commit()
+            sensor_histories = []
+            for data in data_list:
+                if all(key in data for key in ["value", "place_id", "timestamp", "sensor_id"]):
+                    sensor_histories.append(
+                        SensorHistory(
+                            value=str(data["value"]),
+                            place_id=data["place_id"],
+                            dt_created=datetime.fromisoformat(data["timestamp"]),
+                            sensor_id=data["sensor_id"]
+                        )
+                    )
+                else:
+                    logger.error(f"Пропущены некорректные данные: {data}")
+
+            if sensor_histories:
+                session.add_all(sensor_histories)
+                await session.commit()
+            else:
+                logger.warning("Нет корректных данных для вставки в БД.")
     except Exception as e:
         logger.error(f"Ошибка записи в БД: {e}")
 
