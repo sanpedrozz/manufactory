@@ -36,7 +36,7 @@ async def save_to_db(data_list: list[dict]):
                         SensorHistory(
                             value=str(data["value"]),
                             place_id=data["place_id"],
-                            dt_created=datetime.fromisoformat(data["timestamp"]),
+                            dt_created=datetime.fromisoformat(data["timestamp"]).replace(tzinfo=None),
                             sensor_id=data["sensor_id"]
                         )
                     )
