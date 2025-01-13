@@ -1,10 +1,11 @@
 import asyncio
 
+from shared.config import settings
 from shared.db.manufactory.database import AsyncSessionFactory
 from shared.db.manufactory.models import SensorHistory
 from shared.logger import logger
 from shared.redis import RedisManager
-from shared.config import settings
+
 
 async def get_queues(redis_manager: RedisManager) -> list:
     """Получить список всех очередей, содержащих 'place' в их имени."""
@@ -26,12 +27,16 @@ async def save_to_db(data_list: list[dict]):
     """Записать данные в базу данных пачкой."""
     try:
         async with AsyncSessionFactory() as session:
+            for data in data_list:
+                logger.warning(f"data[timestamp]: {data["timestamp"], type(data["timestamp"])}"
+                               f"data[sensor_id]: {data["sensor_id"], type(data["sensor_id"])}")
+
             sensor_histories = [
                 SensorHistory(
                     value=str(data["value"]),
                     place_id=data["place_id"],
                     dt_created=data["timestamp"],
-                    sensor_id=data["sensor_id"],
+                    sensor_id=data["sensor_id"]
                 )
                 for data in data_list
             ]
