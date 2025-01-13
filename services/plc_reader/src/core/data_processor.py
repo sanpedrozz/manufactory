@@ -47,10 +47,10 @@ class DataProcessor:
     def process_default(self, key: str, value: Any) -> None:
         """Обработка данных по умолчанию для остальных ключей."""
         if self.previous_values.get(key) != value:
-            self.sensor_cache.get_or_create_sensor_id(key)
+            sensor_id = self.sensor_cache.get_or_create_sensor_id(key)
             data = {
                 "place_id": self.place_id,
-                "key": key,
+                "sensor_id": sensor_id,
                 "value": value,
                 "timestamp": datetime.utcnow().isoformat(),
             }
