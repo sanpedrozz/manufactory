@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 from shared.config import settings
 from shared.db.manufactory.database import AsyncSessionFactory
@@ -27,15 +28,11 @@ async def save_to_db(data_list: list[dict]):
     """Записать данные в базу данных пачкой."""
     try:
         async with AsyncSessionFactory() as session:
-            for data in data_list:
-                logger.warning(f"data[timestamp]: {data["timestamp"], type(data["timestamp"])}"
-                               f"data[sensor_id]: {data["sensor_id"], type(data["sensor_id"])}")
-
             sensor_histories = [
                 SensorHistory(
                     value=str(data["value"]),
                     place_id=data["place_id"],
-                    dt_created=data["timestamp"],
+                    dt_created=datetime.fromisoformat(data["timestamp"]),
                     sensor_id=data["sensor_id"]
                 )
                 for data in data_list
