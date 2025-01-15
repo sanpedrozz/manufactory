@@ -27,9 +27,8 @@ class SensorCache:
         :return: ID сенсора.
         """
         if name in self.cache:
-            print(name, self.cache[name])
             return self.cache[name]
-
+        print(self.cache)
         # Пытаемся создать новый сенсор
         with SyncSessionFactory() as session:
             new_sensor = Sensor(name=name)
