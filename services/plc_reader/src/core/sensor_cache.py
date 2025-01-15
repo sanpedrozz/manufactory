@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from shared.db.manufactory.database import SyncSessionFactory
 from shared.db.manufactory.models import Sensor
-
+from shared.logger import logger
 
 class SensorCache:
     """Класс для кэширования данных из таблицы Sensor."""
@@ -28,16 +28,18 @@ class SensorCache:
         """
         if name in self.cache:
             return self.cache[name]
-        print(self.cache)
+
         # Пытаемся создать новый сенсор
         with SyncSessionFactory() as session:
             new_sensor = Sensor(name=name)
             session.add(new_sensor)
             try:
                 session.flush()  # Генерирует ID для нового сенсора
+                session.commit()  # Фиксация изменений
                 self.cache[name] = new_sensor.id  # Добавляем в кэш
                 return new_sensor.id
             except IntegrityError:
+                logger.error(f"IntegrityError occurred: {e}")
                 session.rollback()
                 # Если запись уже существует, загружаем ее ID
                 existing_sensor = session.execute(select(Sensor).where(name == Sensor.name))
