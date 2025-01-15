@@ -27,6 +27,7 @@ class SensorCache:
         :return: ID сенсора.
         """
         if name in self.cache:
+            print(name, self.cache[name])
             return self.cache[name]
 
         # Пытаемся создать новый сенсор
