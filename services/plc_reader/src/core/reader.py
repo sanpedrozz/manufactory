@@ -13,7 +13,7 @@ class Reader(TagManager, DataProcessor):
 
     def __init__(self, place: Place):
         #  TODO: Изменить модель, чтобы модель принималась из не бд, а своя модель
-        TagManager.__init__(self, PLCClient(place.ip))
+        TagManager.__init__(self, PLCClient(place.ip, place.name))
         DataProcessor.__init__(self, place.id)
         self.place = place
         self.logger = logger.getChild("Reader")
