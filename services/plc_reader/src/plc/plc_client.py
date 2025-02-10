@@ -35,8 +35,9 @@ def reconnect_on_fail(delay=5):
 class PLCClient:
     """Клиент для работы с ПЛК через библиотеку snap7."""
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, name: str):
         self.ip = ip
+        self.name = name
         self.client = client.Client()
         self.logger = logger.getChild("PLCClient")
         self.logger.setLevel(logging.INFO)
@@ -58,18 +59,18 @@ class PLCClient:
         if not self.connected:
             try:
                 self.client.connect(self.ip, 0, 1)
-                self.logger.info(f"Подключение к PLC {self.ip} установлено.")
+                self.logger.info(f"Подключение к PLC {self.name} ({self.ip}) установлено.")
             except Exception as e:
-                self.logger.error(f"Не удалось подключиться к PLC {self.ip}: {e}")
+                self.logger.error(f"Не удалось подключиться к PLC {self.name} ({self.ip}): {e}")
 
     def disconnect(self):
         """Разрывает соединение с контроллером PLC."""
         if self.connected:
             try:
                 self.client.disconnect()
-                self.logger.info(f"Соединение с PLC {self.ip} разорвано.")
+                self.logger.info(f"Соединение с PLC {self.name} ({self.ip}) разорвано.")
             except Exception as e:
-                self.logger.error(f"Ошибка при разрыве соединения с PLC {self.ip}: {e}")
+                self.logger.error(f"Ошибка при разрыве соединения с PLC {self.name} ({self.ip}): {e}")
 
     @reconnect_on_fail()
     def read_data(self, db_number: int, offset: int, size: int):
@@ -83,7 +84,8 @@ class PLCClient:
         try:
             return self.client.db_read(db_number, offset, size)
         except Exception as e:
-            self.logger.error(f"Ошибка чтения данных из DB {db_number} (offset: {offset}, size: {size}): {e}")
+            self.logger.error(
+                f"Ошибка чтения данных {self.name} ({self.ip}) из DB {db_number} (offset: {offset}, size: {size}): {e}")
             raise
 
     @reconnect_on_fail()
@@ -98,5 +100,5 @@ class PLCClient:
         try:
             self.client.db_write(db_number, start, data)
         except Exception as e:
-            self.logger.error(f"Ошибка записи данных в DB {db_number} (start: {start}): {e}")
+            self.logger.error(f"Ошибка записи данных {self.name} ({self.ip}) в DB {db_number} (start: {start}): {e}")
             raise

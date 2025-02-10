@@ -12,6 +12,7 @@ class Reader(TagManager, DataProcessor):
     """Класс для взаимодействия с ПЛК, чтения данных из заданного DB и извлечения информации о типах данных."""
 
     def __init__(self, place: Place):
+        #  TODO: Изменить модель, чтобы модель принималась из не бд, а своя модель
         TagManager.__init__(self, PLCClient(place.ip))
         DataProcessor.__init__(self, place.id)
         self.place = place
