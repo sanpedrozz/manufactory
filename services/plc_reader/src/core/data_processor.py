@@ -1,11 +1,12 @@
-import logging
 from datetime import datetime
 from typing import List, Dict, Any, Callable
 from zoneinfo import ZoneInfo
 
 from services.plc_reader.src.core.sensor_cache import SensorCache
-from shared.logger.logger import logger
+from shared.logger import setup_logger
 from shared.redis import RedisManager
+
+log = setup_logger(__name__, 'INFO')
 
 
 class DataProcessor:
@@ -23,9 +24,6 @@ class DataProcessor:
             "outDataNonVerify": self.process_out_data,
             "outDataVerify": self.process_out_data,
         }
-
-        self.logger = logger.getChild("Reader")
-        self.logger.setLevel(logging.INFO)
 
     def initialize(self) -> None:
         """Инициализирует кэш сенсоров."""

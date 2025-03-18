@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from fastapi import FastAPI
 
@@ -7,9 +6,9 @@ from services.plc_reader.src.core.reader import Reader
 from services.plc_reader.src.routers import routers
 from services.plc_reader.src.utils import get_places_by_status
 from shared.db.manufactory.models import Place, PlaceStatus
-from shared.logger import logger
+from shared.logger import setup_logger
 
-logging.getLogger("app").setLevel(logging.DEBUG)
+log = setup_logger(__name__, 'INFO')
 
 app = FastAPI(title="PLC API", version="1.0.0")
 
@@ -24,18 +23,18 @@ plc_readers = {}
 async def on_startup():
     global plc_readers
 
-    logger.info("Приложение запускается, инициализация PLC...")
+    log.info("Приложение запускается, инициализация PLC...")
 
     places = await get_places_by_status(PlaceStatus.ACTIVE)
     if not places:
-        logger.info("Нет подходящих PLC для подключения.")
+        log.info("Нет подходящих PLC для подключения.")
         return
 
     for place in places:
-        logger.info(f"Инициализация Reader для {place.name} ({place.ip})")
+        log.info(f"Инициализация Reader для {place.name} ({place.ip})")
         plc_readers[place.name] = asyncio.create_task(run_readers(place))
 
-    logger.info("Приложение успешно запущено и PLC инициализированы.")
+    log.info("Приложение успешно запущено и PLC инициализированы.")
 
 
 @app.on_event("shutdown")
@@ -47,7 +46,7 @@ async def shutdown_event():
     global plc_readers
     for name, plc_readers in plc_readers.items():
         plc_readers.cancel()
-        logger.info(f"Остановлена обработка задач для роботов с IP: {name}")
+        log.info(f"Остановлена обработка задач для роботов с IP: {name}")
 
 
 async def run_readers(place: Place):

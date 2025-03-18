@@ -4,8 +4,10 @@ from datetime import datetime
 from shared.config import settings
 from shared.db.manufactory.database import AsyncSessionFactory
 from shared.db.manufactory.models import SensorHistory
-from shared.logger import logger
+from shared.logger import setup_logger
 from shared.redis import RedisManager
+
+log = setup_logger(__name__, 'INFO')
 
 
 async def get_queues(redis_manager: RedisManager) -> list:
@@ -18,11 +20,11 @@ async def process_queue(queue_name: str, redis_manager: RedisManager):
     """Обработка всех очередей."""
     try:
         data_list = redis_manager.get_all_from_queue(queue_name)
-        logger.debug(f"Данные из очереди {queue_name}: {data_list}")
+        log.debug(f"Данные из очереди {queue_name}: {data_list}")
         if data_list:
             await save_to_db(data_list)
     except Exception as e:
-        logger.error(f"Ошибка обработки очереди {queue_name}: {e}")
+        log.error(f"Ошибка обработки очереди {queue_name}: {e}")
 
 
 async def save_to_db(data_list: list[dict]):
@@ -41,15 +43,15 @@ async def save_to_db(data_list: list[dict]):
                         )
                     )
                 else:
-                    logger.error(f"Пропущены некорректные данные: {data}")
+                    log.error(f"Пропущены некорректные данные: {data}")
 
             if sensor_histories:
                 session.add_all(sensor_histories)
                 await session.commit()
             else:
-                logger.warning("Нет корректных данных для вставки в БД.")
+                log.warning("Нет корректных данных для вставки в БД.")
     except Exception as e:
-        logger.error(f"Ошибка записи в БД: {e}")
+        log.error(f"Ошибка записи в БД: {e}")
 
 
 async def process_redis_to_db():
@@ -60,7 +62,7 @@ async def process_redis_to_db():
         host=settings.REDIS_HOST,
         port=settings.REDIS_PORT
     )
-    logger.info("Запущен процесс обработки данных из Redis.")
+    log.info("Запущен процесс обработки данных из Redis.")
 
     while True:
         queues = await get_queues(redis_manager)
@@ -68,6 +70,6 @@ async def process_redis_to_db():
             tasks = [process_queue(queue_name, redis_manager) for queue_name in queues]
             await asyncio.gather(*tasks)
         else:
-            logger.debug("Очереди отсутствуют.")
+            log.debug("Очереди отсутствуют.")
 
         await asyncio.sleep(settings.REDIS_ASYNC_SLEEP_INTERVAL)

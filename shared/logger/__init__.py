@@ -1,1 +1,1 @@
-from shared.logger.logger import logger
+from shared.logger.logger import setup_logger

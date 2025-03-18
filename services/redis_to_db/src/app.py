@@ -1,12 +1,11 @@
 import asyncio
-import logging
 
 from fastapi import FastAPI
 
 from services.redis_to_db.src.utils import process_redis_to_db
-from shared.logger import logger
+from shared.logger import setup_logger
 
-logging.getLogger("app").setLevel(logging.DEBUG)
+log = setup_logger(__name__, 'INFO')
 
 app = FastAPI(title="Redis Worker API", version="1.0.0")
 
@@ -18,11 +17,11 @@ redis_worker_tasks = []
 async def on_startup():
     global redis_worker_tasks
 
-    logger.info("Приложение запускается, инициализация Redis воркеров...")
+    log.info("Приложение запускается, инициализация Redis воркеров...")
 
     redis_worker_tasks.append(asyncio.create_task(process_redis_to_db()))
 
-    logger.info("Приложение успешно запущено.")
+    log.info("Приложение успешно запущено.")
 
 
 @app.on_event("shutdown")
@@ -31,5 +30,5 @@ async def on_shutdown():
 
     for task in redis_worker_tasks:
         task.cancel()
-    logger.info("Все Redis воркеры остановлены.")
-    logger.info("Приложение остановлено.")
+    log.info("Все Redis воркеры остановлены.")
+    log.info("Приложение остановлено.")

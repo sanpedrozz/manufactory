@@ -2,7 +2,9 @@ from typing import List
 
 from services.plc_reader.src.plc import PLCTag, FULL_SIZE, PLCClient, plc_models
 from shared.config import settings
-from shared.logger.logger import logger
+from shared.logger import setup_logger
+
+log = setup_logger(__name__, 'INFO')
 
 
 class TagManager:
@@ -37,5 +39,5 @@ class TagManager:
         cur_tag_count = self._fetch_tag_count()
         if cur_tag_count != prev_tag_count:
             self.tag_list = self._fetch_tags(cur_tag_count)
-            logger.info(f"Обновлено количество тегов: {cur_tag_count}")
+            log.info(f"Обновлено количество тегов: {cur_tag_count}")
         return cur_tag_count

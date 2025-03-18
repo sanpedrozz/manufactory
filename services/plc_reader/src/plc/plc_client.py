@@ -1,10 +1,11 @@
-import logging
 from functools import wraps
 from time import sleep
 
 from snap7 import client
 
-from shared.logger.logger import logger
+from shared.logger import setup_logger
+
+log = setup_logger(__name__, 'INFO')
 
 
 def reconnect_on_fail(delay=5):
@@ -23,7 +24,7 @@ def reconnect_on_fail(delay=5):
                         return function(self, *args, **kwargs)
                     self.connect()
                 except Exception as error:
-                    logger.warning(f'PLC error for {self.ip}: {error}')
+                    log.warning(f'PLC error for {self.ip}: {error}')
                     self.disconnect()
                     sleep(delay)
 
@@ -39,8 +40,6 @@ class PLCClient:
         self.ip = ip
         self.name = name
         self.client = client.Client()
-        self.logger = logger.getChild("PLCClient")
-        self.logger.setLevel(logging.INFO)
 
     def __enter__(self):
         self.connect()
@@ -59,18 +58,18 @@ class PLCClient:
         if not self.connected:
             try:
                 self.client.connect(self.ip, 0, 1)
-                self.logger.info(f"Подключение к PLC {self.name} ({self.ip}) установлено.")
+                log.info(f"Подключение к PLC {self.name} ({self.ip}) установлено.")
             except Exception as e:
-                self.logger.error(f"Не удалось подключиться к PLC {self.name} ({self.ip}): {e}")
+                log.error(f"Не удалось подключиться к PLC {self.name} ({self.ip}): {e}")
 
     def disconnect(self):
         """Разрывает соединение с контроллером PLC."""
         if self.connected:
             try:
                 self.client.disconnect()
-                self.logger.info(f"Соединение с PLC {self.name} ({self.ip}) разорвано.")
+                log.info(f"Соединение с PLC {self.name} ({self.ip}) разорвано.")
             except Exception as e:
-                self.logger.error(f"Ошибка при разрыве соединения с PLC {self.name} ({self.ip}): {e}")
+                log.error(f"Ошибка при разрыве соединения с PLC {self.name} ({self.ip}): {e}")
 
     @reconnect_on_fail()
     def read_data(self, db_number: int, offset: int, size: int):
@@ -84,7 +83,7 @@ class PLCClient:
         try:
             return self.client.db_read(db_number, offset, size)
         except Exception as e:
-            self.logger.error(
+            log.error(
                 f"Ошибка чтения данных {self.name} ({self.ip}) из DB {db_number} (offset: {offset}, size: {size}): {e}")
             raise
 
@@ -100,5 +99,5 @@ class PLCClient:
         try:
             self.client.db_write(db_number, start, data)
         except Exception as e:
-            self.logger.error(f"Ошибка записи данных {self.name} ({self.ip}) в DB {db_number} (start: {start}): {e}")
+            log.error(f"Ошибка записи данных {self.name} ({self.ip}) в DB {db_number} (start: {start}): {e}")
             raise

@@ -1,11 +1,12 @@
 import asyncio
-import logging
 
 from services.plc_reader.src.core.data_processor import DataProcessor
 from services.plc_reader.src.core.tag_manager import TagManager
 from services.plc_reader.src.plc import PLCClient, plc_models
 from shared.db.manufactory.models.place import Place
-from shared.logger.logger import logger
+from shared.logger import setup_logger
+
+log = setup_logger(__name__, 'INFO')
 
 
 class Reader(TagManager, DataProcessor):
@@ -16,8 +17,6 @@ class Reader(TagManager, DataProcessor):
         TagManager.__init__(self, PLCClient(place.ip, place.name))
         DataProcessor.__init__(self, place.id)
         self.place = place
-        self.logger = logger.getChild("Reader")
-        self.logger.setLevel(logging.INFO)
 
     def _read_plc_data(self) -> None:
         """Чтение данных из PLC и сохранение в текущих значениях."""
@@ -26,7 +25,7 @@ class Reader(TagManager, DataProcessor):
         for tag in self.tag_list:
             model = plc_models.get(tag.type)
             if not model:
-                self.logger.warning(
+                log.warning(
                     f"Неизвестный тип данных {tag.type} для параметра {tag.name} (место: {self.place.name})")
                 continue
 
@@ -37,7 +36,7 @@ class Reader(TagManager, DataProcessor):
                 else:
                     self.current_values[tag.name] = model.read_func(data, 0)
             except Exception as e:
-                self.logger.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
+                log.error(f"Ошибка чтения данных в {self.place.name} для тега {tag.name}: {e}")
 
     def _process_plc_data(self) -> None:
         """Сохранение изменений в данные, если значения изменились."""
@@ -46,7 +45,7 @@ class Reader(TagManager, DataProcessor):
             try:
                 processor(key, value)
             except Exception as e:
-                self.logger.error(f"Ошибка обработки данных в {self.place.name} для ключа {key}: {e}")
+                log.error(f"Ошибка обработки данных в {self.place.name} для ключа {key}: {e}")
 
         self.previous_values = self.current_values.copy()
 
@@ -67,7 +66,7 @@ class Reader(TagManager, DataProcessor):
                     self._process_plc_data()
 
                 except Exception as e:
-                    self.logger.error(f"Ошибка в основном цикле Reader: {e}")
+                    log.error(f"Ошибка в основном цикле Reader: {e}")
 
                 # Задержка перед следующим циклом
                 await asyncio.sleep(0.1)
